@@ -80,11 +80,13 @@ unsigned char setTag = 0x31;
     
     unsigned char sig[256];
     size_t sigLen = sizeof(sig);
+    #if TARGET_OS_IPHONE
     OSStatus sanityCheck = SecKeyRawSign(privateKeyRef, kSecPaddingPKCS1SHA256, SHA256Digest, sizeof(SHA256Digest), sig, &sigLen);
     if (sanityCheck != noErr) {
         return nil;
     }
-    
+    #endif
+
     NSMutableData * scr = [[NSMutableData alloc] initWithData:certRequestData];
 
     // DER encoded value of digest algorithm sha256WithRSAEncryption

@@ -511,6 +511,45 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 }
 
 - (BOOL)connectUsingWebSocketWithClientId:(NSString *)clientId
+                             presignedURL:(NSString *)presignedURL
+                             cleanSession:(BOOL)cleanSession
+                           statusCallback:(void (^)(AWSIoTMQTTStatus status))callback;
+{
+    //Validate that clientId has been passed in.
+    if (clientId == nil || [clientId  isEqualToString: @""] || presignedURL == nil || [presignedURL isEqualToString:@""]) {
+        return false;
+    }
+    AWSDDLogInfo(@"IOTDataManager: Connecting to IoT using websocket, client id: %@, presignedURL: %@", clientId, presignedURL);
+    
+    if (_userDidIssueConnect) {
+        //User has already connected. Can't connect multiple times, return No.
+        return NO;
+    }
+    
+    _userDidIssueConnect = YES;
+    _userDidIssueDisconnect = NO;
+    
+    //set the parameters on the mqttClient from configuration
+    [self.mqttClient setBaseReconnectTime:self.mqttConfiguration.baseReconnectTimeInterval];
+    [self.mqttClient setMinimumConnectionTime:self.mqttConfiguration.minimumConnectionTimeInterval];
+    [self.mqttClient setMaximumReconnectTime:self.mqttConfiguration.maximumReconnectTimeInterval];
+    [self.mqttClient setAutoResubscribe:self.mqttConfiguration.autoResubscribe];
+    [self.mqttClient setPublishRetryThrottle:self.mqttConfiguration.publishRetryThrottle];
+    [self.mqttClient setAutoResubscribe:self.mqttConfiguration.autoResubscribe];
+    
+    return [self.mqttClient connectWithClientId:clientId
+                                   presignedURL:presignedURL
+                                   cleanSession:cleanSession
+                                  configuration:self.IoTData.configuration
+                                      keepAlive:self.mqttConfiguration.keepAliveTimeInterval
+                                      willTopic:self.mqttConfiguration.lastWillAndTestament.topic
+                                        willMsg:[self.mqttConfiguration.lastWillAndTestament.message dataUsingEncoding:NSUTF8StringEncoding]
+                                        willQoS:self.mqttConfiguration.lastWillAndTestament.qos
+                                 willRetainFlag:self.mqttConfiguration.lastWillAndTestament.willRetain
+                                 statusCallback:callback];
+}
+
+- (BOOL)connectUsingWebSocketWithClientId:(NSString *)clientId
                              cleanSession:(BOOL)cleanSession
                      customAuthorizerName:(NSString *)customAuthorizerName
                              tokenKeyName:(NSString *)tokenKeyName

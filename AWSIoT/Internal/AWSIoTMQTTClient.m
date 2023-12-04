@@ -414,6 +414,29 @@
 
 - (BOOL)connectWithClientId:(NSString *)clientId
                presignedURL:(NSString *)presignedURL
+               cleanSession:(BOOL)cleanSession
+              configuration:(AWSServiceConfiguration *)configuration
+                  keepAlive:(UInt16)theKeepAliveInterval
+                  willTopic:(NSString*)willTopic
+                    willMsg:(NSData*)willMsg
+                    willQoS:(UInt8)willQoS
+             willRetainFlag:(BOOL)willRetainFlag
+             statusCallback:(void (^)(AWSIoTMQTTStatus status))callback;
+{
+    self.presignedURL = presignedURL;
+    return [self connectWithClientId:clientId
+                        cleanSession:cleanSession
+                       configuration:configuration
+                           keepAlive:theKeepAliveInterval
+                           willTopic:willTopic
+                             willMsg:willMsg
+                             willQoS:willQoS
+                      willRetainFlag:willRetainFlag
+                      statusCallback:callback];
+}
+
+- (BOOL)connectWithClientId:(NSString *)clientId
+               presignedURL:(NSString *)presignedURL
              statusCallback:(void (^)(AWSIoTMQTTStatus status))callback {
     if (clientId != nil && presignedURL != nil) {
         // currently using the last given URL on subscribe call

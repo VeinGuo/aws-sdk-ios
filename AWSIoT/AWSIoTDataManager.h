@@ -508,6 +508,25 @@ DEPRECATED_MSG_ATTRIBUTE("Use `updateUserMetaData` for updating the user meta da
 - (BOOL)connectUsingWebSocketWithClientId:(NSString *)clientId
                             cleanSession:(BOOL)cleanSession
                           statusCallback:(void (^)(AWSIoTMQTTStatus status))callback;
+
+/**
+ Initialises the MQTT session and connects to AWS IoT using WebSocket.
+ 
+ @return true if initialise finished with success
+ 
+ @param clientId The Client Identifier identifies the Client to the Server.
+ 
+ @param presignedURL A pre-signed URL is used to authenticate the WebSocket connection to AWS IoT.
+ 
+ @param cleanSession specifies if the server should discard previous session information.
+ 
+ @param callback When new mqtt session status is received the callback will be called with new connection status.
+ 
+ */
+- (BOOL)connectUsingWebSocketWithClientId:(NSString *)clientId
+                             presignedURL:(NSString *)presignedURL
+                             cleanSession:(BOOL)cleanSession
+                           statusCallback:(void (^)(AWSIoTMQTTStatus status))callback;
     
 /**
  Initialises the MQTT session and connects to AWS IoT using WebSocket/CustomAuthorizer mechanism.
